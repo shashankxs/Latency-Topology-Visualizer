@@ -6,22 +6,6 @@ import { EXCHANGE_SERVERS, ExchangeServer } from "../data/exchanges";
 import { latencyProvider } from "../lib/latencyProvider";
 
 
-/**
- * Map3D.tsx (updated)
- *
- * Fixes applied:
- * - Use hemisphereLight args to satisfy TypeScript typing.
- * - Improved lighting (ambient + hemisphere + directional) so the globe is visible (not a black disk).
- * - Optional texture support for the globe (load /earth-dark.jpg from public/ if present).
- * - Ensured Canvas fills the container by setting inline style on Canvas.
- * - Adjusted camera position and OrbitControls target to give space around the globe.
- * - Added a subtle atmosphere layer to give a nicer visual.
- * - Kept GPU arcs + region visualization intact.
- *
- * Drop a small earth-dark.jpg into /public for best visual results (optional). If you don't want a texture,
- * the code will fall back to a colored MeshPhongMaterial so the globe remains visible.
- */
-
 type Props = {
   filterProviders?: Record<string, boolean>;
   onSelect?: (id: string | null) => void;

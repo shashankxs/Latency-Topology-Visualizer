@@ -351,7 +351,7 @@ export default function ControlsPanel({
           <button
             onClick={handleExportLiveSnapshotCsv}
             style={{ fontSize: 12, padding: "4px 8px", borderRadius: 6, background: "transparent", color: "#ddd", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer" }}
-            title="Export current live latency report (CSV)"
+            title="Export current live latency report"
           >
             Export Snapshot (CSV)
           </button>
