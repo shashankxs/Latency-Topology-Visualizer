@@ -1,0 +1,36 @@
+html, body, #__next {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+* { box-sizing: border-box; }
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+.sidebar {
+  width: 360px;
+  max-width: 40%;
+  background: rgba(10,11,13,0.95);
+  color: #fff;
+  padding: 16px;
+  overflow: auto;
+}
+.main {
+  flex: 1;
+  position: relative;
+}
+.header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:12px;
+}
+.controls { margin-bottom: 12px; }
+.legend { display:flex; gap:8px; margin-top:8px; }
+.legend-item { display:flex; gap:6px; align-items:center; }
+.legend-swatch { width:14px; height:14px; border-radius:3px; }
+.chart-container { height:220px; background: rgba(255,255,255,0.03); padding:8px; border-radius:6px; }
