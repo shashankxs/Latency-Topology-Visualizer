@@ -3,8 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { EXCHANGE_SERVERS, ExchangeServer } from "../data/exchanges";
-import { latencyProvider } from "../lib/latencyProvider";
-
+import { useAppContext } from "../lib/appContext";
 
 type Props = {
   filterProviders?: Record<string, boolean>;
@@ -67,7 +66,7 @@ function RegionVisualization({ regions }: { regions: { lat: number; lon: number;
 
 /* GPUArcs component - unchanged except canvas/lighting fixes applied above */
 function GPUArcs({ pairs }: { pairs: { from: ExchangeServer; to: ExchangeServer; latency: number }[] }) {
-  const { gl } = useThree();
+  const { gl, scene } = useThree();
   const maxInstances = Math.max(1, pairs.length);
   const instancedRef = useRef<THREE.InstancedMesh | null>(null);
 
@@ -86,46 +85,7 @@ function GPUArcs({ pairs }: { pairs: { from: ExchangeServer; to: ExchangeServer;
     return new THREE.TubeGeometry(baseCurve, 64, 0.01, 8, false);
   }, [baseCurve]);
 
-  useEffect(() => {
-    if (!instancedRef.current) return;
-    const instanced = instancedRef.current;
-    const dummy = new THREE.Object3D();
-    const colors = new Float32Array(maxInstances * 3);
-    const speeds = new Float32Array(maxInstances);
-    const widths = new Float32Array(maxInstances);
-
-    pairs.forEach((p, idx) => {
-      const start = latLonToVector3(p.from.latitude, p.from.longitude, 5.01);
-      const end = latLonToVector3(p.to.latitude, p.to.longitude, 5.01);
-      const dir = end.clone().sub(start).normalize();
-      const axis = new THREE.Vector3(1, 0, 0);
-      const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, dir);
-      const length = start.distanceTo(end);
-
-      dummy.position.copy(start);
-      dummy.quaternion.copy(quaternion);
-      dummy.scale.set(length, 1, 1);
-      dummy.updateMatrix();
-      instanced.setMatrixAt(idx, dummy.matrix);
-
-      const color = new THREE.Color(p.latency < 50 ? "#2ECC71" : p.latency < 120 ? "#F1C40F" : "#E74C3C");
-      colors[idx * 3 + 0] = color.r;
-      colors[idx * 3 + 1] = color.g;
-      colors[idx * 3 + 2] = color.b;
-
-      speeds[idx] = Math.max(0.2, 1.2 - Math.min(1.0, p.latency / 300));
-      widths[idx] = Math.max(0.004, Math.min(0.03, 0.02 * (100 / (p.latency + 10))));
-    });
-
-    instanced.geometry.setAttribute("instanceColor", new THREE.InstancedBufferAttribute(colors, 3));
-    instanced.geometry.setAttribute("instanceSpeed", new THREE.InstancedBufferAttribute(speeds, 1));
-    instanced.geometry.setAttribute("instanceWidth", new THREE.InstancedBufferAttribute(widths, 1));
-
-    instanced.count = pairs.length;
-    instanced.instanceMatrix.needsUpdate = true;
-  }, [pairs, maxInstances]);
-
-  const shaderMaterial = useMemo(() => {
+  const [shaderMaterial] = useState(() => {
     const mat = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
@@ -133,6 +93,8 @@ function GPUArcs({ pairs }: { pairs: { from: ExchangeServer; to: ExchangeServer;
       },
       vertexShader: `
         attribute vec3 instanceColor;
+        attribute float instanceSpeed;
+        attribute float instanceWidth;
         varying vec3 vColor;
         varying float vU;
         void main() {
@@ -160,12 +122,53 @@ function GPUArcs({ pairs }: { pairs: { from: ExchangeServer; to: ExchangeServer;
       blending: THREE.AdditiveBlending
     });
     return mat;
-  }, []);
+  });
+
+  useEffect(() => {
+    if (!instancedRef.current) return;
+    const instanced = instancedRef.current;
+    const dummy = new THREE.Object3D();
+    const colors = new Float32Array(maxInstances * 3);
+    const speeds = new Float32Array(maxInstances);
+    const widths = new Float32Array(maxInstances);
+
+    pairs.forEach((p, idx) => {
+      const start = latLonToVector3(p.from.latitude, p.from.longitude, 5.01);
+      const end = latLonToVector3(p.to.latitude, p.to.longitude, 5.01);
+      const dir = end.clone().sub(start).normalize();
+      const axis = new THREE.Vector3(1, 0, 0);
+      const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, dir);
+      const length = start.distanceTo(end);
+
+      dummy.position.copy(start);
+      dummy.quaternion.copy(quaternion);
+      dummy.scale.set(length, 1, 1);
+      dummy.updateMatrix();
+      instanced.setMatrixAt(idx, dummy.matrix);
+
+      let colorCode = "#2ECC71"; // Green (low latency)
+      if (p.latency > 50) colorCode = "#F1C40F"; // Yellow (medium latency)
+      if (p.latency > 120) colorCode = "#E74C3C"; // Red (high latency)
+      const color = new THREE.Color(colorCode);
+
+      colors[idx * 3 + 0] = color.r;
+      colors[idx * 3 + 1] = color.g;
+      colors[idx * 3 + 2] = color.b;
+
+      speeds[idx] = Math.max(0.2, 1.2 - Math.min(1.0, p.latency / 300));
+      widths[idx] = Math.max(0.004, Math.min(0.03, 0.02 * (100 / (p.latency + 10))));
+    });
+
+    instanced.geometry.setAttribute("instanceColor", new THREE.InstancedBufferAttribute(colors, 3));
+    instanced.geometry.setAttribute("instanceSpeed", new THREE.InstancedBufferAttribute(speeds, 1));
+    instanced.geometry.setAttribute("instanceWidth", new THREE.InstancedBufferAttribute(widths, 1));
+
+    instanced.count = pairs.length;
+    instanced.instanceMatrix.needsUpdate = true;
+  }, [pairs, maxInstances]);
 
   useFrame(({ clock }) => {
-    if ((shaderMaterial as any).uniforms) {
-      (shaderMaterial as any).uniforms.time.value = clock.getElapsedTime();
-    }
+    shaderMaterial.uniforms.time.value = clock.getElapsedTime();
   });
 
   return <instancedMesh ref={instancedRef} args={[baseGeometry, shaderMaterial, Math.max(1, pairs.length)]} />;
@@ -186,19 +189,21 @@ export default function Map3D({ filterProviders = {}, onSelect, highlightedPair 
     }
   }, []);
 
-  useEffect(() => {
-    const unsub = latencyProvider.subscribe((updates) => {
-      const pairs = updates.map((u) => {
-        const from = EXCHANGE_SERVERS.find((s) => s.id === u.from)!;
-        const to = EXCHANGE_SERVERS.find((s) => s.id === u.to)!;
-        return { from, to, latency: u.ms };
-      });
-      const filtered = pairs.filter((p) => {
-        return (filterProviders[p.from.provider] ?? true) && (filterProviders[p.to.provider] ?? true);
-      });
-      setLatestPairs(filtered.slice(0, 200));
-    });
+  const { allUpdates } = useAppContext();
 
+  useEffect(() => {
+    const pairs = allUpdates.map((u) => {
+      const from = EXCHANGE_SERVERS.find((s) => s.id === u.from)!;
+      const to = EXCHANGE_SERVERS.find((s) => s.id === u.to)!;
+      return { from, to, latency: u.ms };
+    });
+    const filtered = pairs.filter((p) => {
+      return (filterProviders[p.from.provider] ?? true) && (filterProviders[p.to.provider] ?? true);
+    });
+    setLatestPairs(filtered.slice(0, 200));
+  }, [allUpdates, filterProviders]);
+
+  useEffect(() => {
     const regionMap: Record<string, { latSum: number; lonSum: number; count: number }> = {};
     EXCHANGE_SERVERS.forEach((s) => {
       const key = `${s.provider}__${s.region}`;
@@ -213,9 +218,7 @@ export default function Map3D({ filterProviders = {}, onSelect, highlightedPair 
       count: r.count
     }));
     setRegions(regs);
-
-    return unsub;
-  }, [filterProviders]);
+  }, []);
 
   return (
     <Canvas

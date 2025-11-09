@@ -1,16 +1,13 @@
+import React from "react";           
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { useEffect } from "react";
-import { mockLatencyService } from "../lib/latencyService";
+import { AppProvider } from "../lib/appContext";
 
+// Now you can safely write:
 export default function App({ Component, pageProps }: AppProps) {
-  useEffect(() => {
-    // start the mock service on client
-    mockLatencyService.start();
-    return () => {
-      mockLatencyService.stop();
-    };
-  }, []);
-
-  return <Component {...pageProps} />;
+  return (
+    <AppProvider>
+      <Component {...pageProps} />
+    </AppProvider>
+  );
 }

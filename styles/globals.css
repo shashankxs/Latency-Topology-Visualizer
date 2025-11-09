@@ -1,36 +1,211 @@
-html, body, #__next {
-  height: 100%;
-  margin: 0;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-* { box-sizing: border-box; }
-.app {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-.sidebar {
-  width: 360px;
-  max-width: 40%;
-  background: rgba(10,11,13,0.95);
+body {
+  background-color: #0d1117;
   color: #fff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Layout shell (grid) */
+.app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #161b22;
   padding: 16px;
-  overflow: auto;
+  overflow-y: auto;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px) saturate(130%);
+  /* Add scroll styling */
+  scrollbar-color: #23272e #10131a;     /* thumb, track: For Firefox */
+  scrollbar-width: thin;                /* For Firefox */
 }
-.main {
-  flex: 1;
-  position: relative;
+
+/* Mobile navigation */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #161b22;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 1000;
+  align-items: center;
+  justify-content: space-between;
 }
-.header {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:12px;
+
+.mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
 }
-.controls { margin-bottom: 12px; }
-.legend { display:flex; gap:8px; margin-top:8px; }
-.legend-item { display:flex; gap:6px; align-items:center; }
-.legend-swatch { width:14px; height:14px; border-radius:3px; }
-.chart-container { height:220px; background: rgba(255,255,255,0.03); padding:8px; border-radius:6px; }
+
+.mobile-sidebar {
+  display: none;
+  position: fixed;
+  top: 60px; /* Below the mobile header */
+  left: 0;
+  width: 280px;
+  height: calc(100% - 60px);
+  background-color: #161b22;
+  padding: 16px;
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+}
+
+.mobile-sidebar.open {
+  transform: translateX(0);
+}
+
+/* Tablet breakpoint (1024px and below) */
+@media (max-width: 1024px) {
+  .app {
+    grid-template-columns: 280px 1fr;
+  }
+  .sidebar {
+    width: 280px;
+  }
+}
+
+/* Mobile breakpoint (768px and below) */
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    padding-top: 60px; /* Space for mobile header */
+  }
+  .sidebar {
+    display: none;
+  }
+  .mobile-header {
+    display: flex;
+  }
+  .mobile-sidebar-overlay {
+    display: block;
+  }
+  .mobile-sidebar {
+    display: block;
+  }
+  .mobile-sidebar-overlay.open {
+    display: block;
+  }
+  body {
+    font-size: 14px;
+  }
+  .label-pill {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* Small mobile breakpoint (480px and below) */
+@media (max-width: 480px) {
+  .app {
+    padding-top: 50px;
+  }
+  .mobile-header {
+    padding: 8px 12px;
+  }
+  body {
+    font-size: 13px;
+  }
+  .sidebar, .mobile-sidebar {
+    padding: 12px;
+  }
+}
+
+/* Focus styles */
+button:focus-visible, input:focus-visible {
+  outline: 2px solid rgba(43,116,255,0.7);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Touch-friendly buttons */
+button {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  button {
+    min-height: 48px;
+    padding: 10px 16px;
+    font-size: 16px;
+  }
+}
+
+/* Label pill harmony */
+.label-pill {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  color: #ffffff;
+  background: rgba(20, 28, 36, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 6px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  backdrop-filter: saturate(160%) blur(2px);
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.label-text-shadow {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+/* ---------- CUSTOM SCROLLBAR STYLES ---------- */
+/* For sidebar and any scrollable area with .custom-scroll */
+.sidebar,
+.mobile-sidebar,
+.custom-scroll {
+  scrollbar-color: #23272e #10131a;  /* thumb, track for Firefox */
+  scrollbar-width: thin;
+}
+
+/* Webkit/Blink browsers (Chrome, Edge, Safari) */
+.sidebar::-webkit-scrollbar,
+.mobile-sidebar::-webkit-scrollbar,
+.custom-scroll::-webkit-scrollbar {
+  width: 8px;
+  background: #10131a;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.mobile-sidebar::-webkit-scrollbar-thumb,
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #23272e;
+  border-radius: 8px;
+  border: 2px solid #10131a;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.mobile-sidebar::-webkit-scrollbar-thumb:hover,
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #343942;
+}
+
+/* Make sure scrollable areas have constrained height (if needed) */
+.custom-scroll {
+  max-height: 100vh;
+  overflow-y: auto;
+}

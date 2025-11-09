@@ -336,12 +336,13 @@ export default function ControlsPanel({
             onClick={toggleLive}
             style={{
               fontSize: 12,
-              padding: "4px 8px",
+              padding: "8px 12px",
               borderRadius: 6,
               background: "transparent",
               color: "#ddd",
               border: "1px solid rgba(255,255,255,0.2)",
-              cursor: "pointer"
+              cursor: "pointer",
+              minHeight: 36
             }}
           >
             {live ? "Pause" : "Resume"}
@@ -350,7 +351,7 @@ export default function ControlsPanel({
           {/* Export actions */}
           <button
             onClick={handleExportLiveSnapshotCsv}
-            style={{ fontSize: 12, padding: "4px 8px", borderRadius: 6, background: "transparent", color: "#ddd", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer" }}
+            style={{ fontSize: 12, padding: "8px 12px", borderRadius: 6, background: "transparent", color: "#ddd", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", minHeight: 36 }}
             title="Export current live latency report"
           >
             Export Snapshot (CSV)
@@ -487,12 +488,13 @@ export default function ControlsPanel({
                   onClick={() => setTimeRange(r)}
                   style={{
                     fontSize: 12,
-                    padding: "4px 8px",
+                    padding: "8px 12px",
                     borderRadius: 6,
                     background: timeRange === r ? "#1f6feb" : "transparent",
                     color: timeRange === r ? "#fff" : "#ddd",
                     border: "1px solid rgba(255,255,255,0.2)",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    minHeight: 36
                   }}
                 >
                   {r}
