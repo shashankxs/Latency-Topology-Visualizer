@@ -90,7 +90,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { AppContext } from "../lib/appContext";
 import Map3D from "../components/Map3D";
-import { latencyProvider } from "../lib/latencyProvider"; // This now refers to the mock above
+import { latencyProvider } from "../lib/latencyProvider"; 
 
 // Context mock (unchanged)
 const mockAppContextValue = {

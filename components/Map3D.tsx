@@ -34,8 +34,23 @@ function Marker({ server, onClick }: { server: ExchangeServer; onClick: (id: str
         <coneGeometry args={[0.06, 0.2, 6]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <Html distanceFactor={10}>
-        <div style={{ color: "#fff", fontSize: 12, textAlign: "center", pointerEvents: "none" }}>{server.name}</div>
+      <Html distanceFactor={10} position={[0, 0.3, 0]}>
+        <div style={{
+          color: "#e6edf3",
+          fontSize: 12,
+          fontWeight: "600",
+          textAlign: "center",
+          pointerEvents: "none",
+          background: "linear-gradient(135deg, rgba(22, 27, 34, 0.9) 0%, rgba(13, 17, 23, 0.95) 100%)",
+          padding: "6px 10px",
+          borderRadius: "6px",
+          border: "1px solid rgba(56, 139, 253, 0.3)",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(56, 139, 253, 0.1)",
+          whiteSpace: "nowrap",
+          backdropFilter: "blur(4px)"
+        }}>
+          {server.name}
+        </div>
       </Html>
     </group>
   );

@@ -34,7 +34,7 @@ export default function Home() {
         <div className="app">
             {/* Mobile header */}
             <div className="mobile-header">
-                <h1 style={{ margin: 0, fontSize: "18px" }}>Latency Topology Visualizer</h1>
+                <h1 style={{ margin: 0, fontSize: "18px", fontWeight: "700", color: "#e6edf3" }}>🌐 Latency Topology Visualizer</h1>
                 <HamburgerMenu isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
             </div>
 

@@ -314,47 +314,64 @@ export default function ControlsPanel({
   return (
     <div>
       {/* Header: Title + Actions */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <h3 style={{ margin: 0 }}>Latency Topology Visualizer</h3>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 16 }}>
+        <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "700", color: "#e6edf3" }}>Latency Topology Visualizer</h3>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span
             aria-live="polite"
             style={{
               fontSize: 12,
+              fontWeight: "600",
               opacity: 0.9,
-              padding: "2px 8px",
-              borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: live ? "rgba(46, 160, 67, 0.2)" : "rgba(240, 84, 84, 0.2)"
+              padding: "4px 10px",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.15)",
+              background: live ? "linear-gradient(135deg, rgba(46, 160, 67, 0.2) 0%, rgba(46, 160, 67, 0.1) 100%)" : "linear-gradient(135deg, rgba(240, 84, 84, 0.2) 0%, rgba(240, 84, 84, 0.1) 100%)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.3)"
             }}
             title={live ? "Live probing running" : "Probing paused"}
           >
-            {live ? "Live" : "Paused"}
+            {live ? "● Live" : "⏸ Paused"}
           </span>
           <button
             aria-pressed={live}
             onClick={toggleLive}
             style={{
               fontSize: 12,
+              fontWeight: "600",
               padding: "8px 12px",
-              borderRadius: 6,
-              background: "transparent",
-              color: "#ddd",
-              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: 8,
+              background: "linear-gradient(135deg, rgba(56, 139, 253, 0.1) 0%, rgba(56, 139, 253, 0.05) 100%)",
+              color: "#58a6ff",
+              border: "1px solid rgba(56, 139, 253, 0.3)",
               cursor: "pointer",
-              minHeight: 36
+              minHeight: 36,
+              transition: "all 0.2s ease",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
             }}
           >
-            {live ? "Pause" : "Resume"}
+            {live ? "⏸ Pause" : "▶ Resume"}
           </button>
 
           {/* Export actions */}
           <button
             onClick={handleExportLiveSnapshotCsv}
-            style={{ fontSize: 12, padding: "8px 12px", borderRadius: 6, background: "transparent", color: "#ddd", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", minHeight: 36 }}
+            style={{
+              fontSize: 12,
+              fontWeight: "600",
+              padding: "8px 12px",
+              borderRadius: 8,
+              background: "linear-gradient(135deg, rgba(187, 128, 9, 0.1) 0%, rgba(187, 128, 9, 0.05) 100%)",
+              color: "#d29922",
+              border: "1px solid rgba(187, 128, 9, 0.3)",
+              cursor: "pointer",
+              minHeight: 36,
+              transition: "all 0.2s ease",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
+            }}
             title="Export current live latency report"
           >
-            Export Snapshot (CSV)
+            📊 Export CSV
           </button>
         </div>
       </div>
